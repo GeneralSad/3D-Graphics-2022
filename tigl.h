@@ -73,9 +73,6 @@ namespace tigl
 
 			// Sets the fog to Exponential
 			virtual void setFogExp2(float density) = 0;
-
-			// Sets the color of the fog
-			virtual void setFogColor(const glm::vec3 &color) = 0;
 		};
 	}
 	// A simple structure to store vertices. Can store positions, normals, colors and texture coordinats
@@ -127,21 +124,7 @@ namespace tigl
 		static Vertex PCTN(const glm::vec3& position, const glm::vec4& color, const glm::vec2& texcoord, const glm::vec3& normal) {
 			return { position, normal, color, texcoord };
 		}
-
-		bool operator == (const Vertex& other);
 	};
-
-	class VBO
-	{
-	public:
-		~VBO();
-	private:
-		GLuint id;
-		unsigned int size;
-		friend void drawVertices(GLenum shape, VBO* vbo);
-		friend VBO* createVbo(const std::vector<Vertex>& vertices);
-	};
-
 	// Access point for the shader
 	extern std::unique_ptr<internal::Shader> shader;
 
@@ -159,12 +142,6 @@ namespace tigl
 
 	// Draws a full array of vertices
 	void drawVertices(GLenum shape, const std::vector<Vertex> &vertices);
-
-	// Creates a VBO
-	VBO* createVbo(const std::vector<Vertex> &vertices);
-
-	// draws vertices from a VBO
-	void drawVertices(GLenum shape, VBO* vbo);
 }
 
 
