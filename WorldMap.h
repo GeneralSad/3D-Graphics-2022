@@ -4,24 +4,23 @@
 #include "list"
 #include <glm/glm.hpp>
 #include <memory>
+#include "DrawComponent.h"
 
-class WorldMap
+class WorldMap : public DrawComponent
 {
-
-public:
-
 
 private:
 	std::list<std::shared_ptr<GameObject>> gameObjects;
+	void Construct(std::list<std::shared_ptr<GameObject>> gameObjects);
 
 public:
-	glm::vec3 gamePosition;
+	WorldMap();
 	WorldMap(std::list<std::shared_ptr<GameObject>> gameObjects);
 	~WorldMap();
 
 	void addObject(std::shared_ptr<GameObject> object);
 
-	void draw();
+	virtual void draw() override;
 	void update(float elapsed_time);
 
 };

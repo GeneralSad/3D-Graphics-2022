@@ -12,9 +12,9 @@ using tigl::Vertex;
 #include "FloorComponent.h"
 #include "GameScene.h"
 #include "GameObject.h"
-#include "PlayerComponent.h"
 #include "TextureComponent.h"
 #include "MoveComponent.h"
+#include "WorldMap.h"
 
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "glew32s.lib")
@@ -26,10 +26,15 @@ void init();
 void update();
 void draw();
 void createScene();
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void processInput(GLFWwindow* window);
 
 std::shared_ptr<GameObject> player;
 std::list<std::shared_ptr<GameObject>> list;
 std::shared_ptr<GameScene> scene;
+
+float deltaTime = 0.0f;	// Time between current frame and last frame
+float lastFrame = 0.0f; // Time of last frame
 
 int main(void)
 {
@@ -61,8 +66,6 @@ int main(void)
 	return 0;
 }
 
-double lastFrameTime = 0;
-
 void init()
 {
 	glEnable(GL_DEPTH_TEST);
@@ -83,18 +86,26 @@ void init()
 
 	createScene();
 
-	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-		{
-			if (key == GLFW_KEY_ESCAPE)
-				glfwSetWindowShouldClose(window, true);
-		});
+	glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+		if (key == GLFW_KEY_ESCAPE) {
+			glfwSetWindowShouldClose(window, true);
+		}
+				
+	});
+
+	glfwSetCursorPosCallback(window, mouse_callback);
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 }
 
 void update()
 {
-	double currentFrameTime = glfwGetTime();
-	double deltaTime = currentFrameTime - lastFrameTime;
-	lastFrameTime = currentFrameTime;
+	double currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	processInput(window);
 
 #ifdef FPS_DEBUG
 	std::cout << 1 / deltaTime << " FPS" << std::endl;
@@ -104,17 +115,115 @@ void update()
 
 }
 
+glm::vec3 direction;
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float lastX = 400, lastY = 300;
+bool firstMouse = true;
+float yaw = -90.0f;
+float pitch = -90.0f;
+
+void processInput(GLFWwindow* window) {
+
+	float cameraSpeed = 2.5f * deltaTime;
+
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true);
+		//std::cout << "Escape" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		cameraPos += cameraSpeed * cameraFront;
+		//std::cout << "W" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		cameraPos -= cameraSpeed * cameraFront;
+		//std::cout << "S" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		//std::cout << "A" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		//std::cout << "D" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		cameraPos.y += cameraSpeed;
+		//std::cout << "Space" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+		cameraPos.y -= cameraSpeed;
+		//std::cout << "Control" << std::endl;
+	}
+
+}
+
 void draw()
 {
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	tigl::shader->enableFog(true);
+	tigl::shader->enableTexture(false);
 	tigl::shader->enableColor(true);
 
-	tigl::shader->setProjectionMatrix(glm::perspective(glm::radians(70.0f), 1280 / (float)720, 0.1f, 200.0f));
-	tigl::shader->setViewMatrix(glm::lookAt(glm::vec3(5, 5, 5), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+	int viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 1000.0f);
+
+	tigl::shader->setProjectionMatrix(projection);
+
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	tigl::shader->setViewMatrix(view);
 	tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
+	scene->draw();
+
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos;
+	lastX = xpos;
+	lastY = ypos;
+
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(direction);
 }
 
 //Create a scene
@@ -132,10 +241,14 @@ void createScene() {
 	//player->addComponent(std::make_shared<ObjectComponent>("models/dolphin/", 0.05f));
 #endif
 	//player->addComponent(std::make_shared<CollisionComponent>(glm::vec3(0.75f, 1, 1.2f))); //ToDo change to accurate hitbox.
-	player->addComponent(std::make_shared<PlayerComponent>());
 	player->scale = glm::vec3(0.7f, 0.7f, 0.7f);
 	player->rotation = glm::vec3(0, -1 * (float)M_PI, 0);
 	scene->addGameObject(player);
+
+	std::shared_ptr<GameObject> worldMap = std::make_shared<GameObject>();
+	worldMap->addComponent(std::make_shared<WorldMap>());
+	std::shared_ptr<WorldMap> Component = worldMap->getComponent<WorldMap>();
+	scene->addGameObject(worldMap);
 
 	std::list<std::shared_ptr<GameObject>> objectList;
 
