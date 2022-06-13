@@ -47,6 +47,7 @@ namespace tigl
 			setUniform(Uniform::fogType, 2);
 			setUniform(Uniform::fogExpDensity, density);
 		}
+		void setFogColor(const glm::vec3& color) { setUniform(Uniform::fogColor, color); }
 
 	private:
 		void addShader(int shaderProgram, GLenum shaderType, const std::string& shader);
@@ -74,6 +75,7 @@ namespace tigl
 			fogLinNear,
 			fogLinFar,
 			fogExpDensity,
+			fogColor,
 
 
 			UniformMax
@@ -157,27 +159,59 @@ namespace tigl
 		}
 	}
 
+	VBO* createVbo(const std::vector<Vertex>& vertices)
+	{
+		VBO* vbo = new VBO();
+		glGenBuffers(1, &vbo->id);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		vbo->size = (unsigned int)vertices.size();
+		return vbo;
+	}
+	VBO::~VBO()
+	{
+		glDeleteBuffers(1, &id);
+	}
+
+
+	void drawVertices(GLenum shape, VBO* vbo)
+	{
+		static Vertex tmpVertex;
+		if (vbo->size > 0)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
+
+			glVertexAttribPointer(tigl::attributePosition, 3, GL_FLOAT, false, sizeof(Vertex), (void*)((char*)&tmpVertex.position - (char*)&tmpVertex));
+			glVertexAttribPointer(tigl::attributeColor, 4, GL_FLOAT, false, sizeof(Vertex), (void*)((char*)&tmpVertex.color - (char*)&tmpVertex));
+			glVertexAttribPointer(tigl::attributeTexcoord, 2, GL_FLOAT, false, sizeof(Vertex), (void*)((char*)&tmpVertex.texcoord - (char*)&tmpVertex));
+			glVertexAttribPointer(tigl::attributeNormal, 3, GL_FLOAT, false, sizeof(Vertex), (void*)((char*)&tmpVertex.normal - (char*)&tmpVertex));
+			glDrawArrays(shape, 0, (GLsizei)vbo->size);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		}
+	}
+
+
+
+
+
 
 	ShaderImpl::ShaderImpl()
 	{
 		this->programId = glCreateProgram();
 		addShader(this->programId, GL_VERTEX_SHADER, R"ESC(#version 330
-
 layout (location = 0) in vec3 a_position;
 layout (location = 1) in vec4 a_color;
 layout (location = 2) in vec2 a_texcoord;
 layout (location = 3) in vec3 a_normal;
-
 uniform mat4 modelMatrix = mat4(1.0);
 uniform mat4 viewMatrix = mat4(1.0);
 uniform mat4 projectionMatrix = mat4(1.0);
 uniform mat3 normalMatrix = mat3(1.0);
-
 out vec4 color;
 out vec2 texCoord;
 out vec3 normal;
 out vec3 position;
-
 void main()
 {
 	texCoord = a_texcoord;
@@ -190,7 +224,6 @@ void main()
 		addShader(this->programId, GL_FRAGMENT_SHADER, R"ESC(#version 330
 layout(location = 0) out vec4 fragColor;
 uniform sampler2D s_texture;
-
 //flags
 uniform bool useColor = false;
 uniform bool useColorMult = false;
@@ -202,13 +235,10 @@ uniform bool useFog = false;
 uniform vec4 colorMult = vec4(1,1,1,1);
 uniform vec3 fogColor = vec3(1.0);
 uniform vec3 cameraPosition;
-
 uniform int fogType = 0;
 uniform float fogLinNear = 0;
 uniform float fogLinFar = 100;
 uniform float fogExpDensity = 0;
-
-
 uniform float shinyness = 0;
 struct Light
 {
@@ -220,28 +250,21 @@ struct Light
 };
 uniform Light lights[5];
 uniform int lightCount = 1;
-
-
 in vec4 color;
 in vec2 texCoord;
 in vec3 normal;
 in vec3 position;
-
-
 float fogFactorLinear(const float dist, const float start, const float end) {
   return 1.0 - clamp((end - dist) / (end - start), 0.0, 1.0);
 }
-
 float fogFactorExp2(const float dist, const float density) {
   const float LOG2 = -1.442695;
   float d = density * dist;
   return 1.0 - clamp(exp2(d * d * LOG2), 0.0, 1.0);
 }
-
 float fogFactorExp(const float dist, const float density) {
   return 1.0 - clamp(exp(-density * dist), 0.0, 1.0);
 }
-
 void main()
 {
 	vec4 outputColor = vec4(1,1,1,1);
@@ -251,24 +274,23 @@ void main()
 		outputColor *= colorMult;
 	if(useTexture)
 		outputColor *= texture2D(s_texture, texCoord);
-
 	if(useLighting) {
-		vec3 ambient;
-		vec3 specular;
-		vec3 diffuse;
-
+		vec3 ambient = vec3(0,0,0);
+		vec3 specular = vec3(0,0,0);
+		vec3 diffuse = vec3(0,0,0);
 		for(int i = 0; i < lightCount; i++) {
 		
 			vec3 lightDir = normalize(lights[i].position - position);
-
+			if(lights[i].directional)
+				lightDir = normalize(lights[i].position);
 			ambient += lights[i].ambient;
-
 			float diffuseFactor = max(0, dot(lightDir, normalize(normal)));
 			diffuse += diffuseFactor * lights[i].diffuse;
 		
 			vec3 reflectDir = reflect(-lightDir, normalize(normal));
 			float specularFactor = pow(max(dot(normalize(cameraPosition-position), reflectDir), 0.0), shinyness);
-			specular += specularFactor * lights[i].specular;
+			if(shinyness > 0)
+				specular += specularFactor * lights[i].specular;
 		}
 		
 		outputColor.rgb = (ambient + specular + diffuse) * outputColor.rgb;
@@ -281,10 +303,7 @@ void main()
 			outputColor.rgb = mix(outputColor.rgb, fogColor, fogFactorExp(fogDistance, fogExpDensity));
 		else if(fogType == 2)
 			outputColor.rgb = mix(outputColor.rgb, fogColor, fogFactorExp2(fogDistance, fogExpDensity));
-
 	}
-
-
 	if(useAlphaTest && outputColor.a < 0.01)
 		discard;
 	fragColor = outputColor;
@@ -293,7 +312,7 @@ void main()
 		glLinkProgram(programId);
 
 		GLint status;
-		glGetProgramiv(programId, GL_COMPILE_STATUS, &status);
+		glGetProgramiv(programId, GL_LINK_STATUS, &status);
 		if (status == GL_FALSE)
 		{
 			int length, charsWritten;
@@ -314,6 +333,8 @@ void main()
 		uniforms[Uniform::useColorMult] = glGetUniformLocation(programId, "useColorMult");
 		uniforms[Uniform::useTexture] = glGetUniformLocation(programId, "useTexture");
 		uniforms[Uniform::useLighting] = glGetUniformLocation(programId, "useLighting");
+		uniforms[Uniform::lightCount] = glGetUniformLocation(programId, "lightCount");
+
 		uniforms[Uniform::useAlphaTest] = glGetUniformLocation(programId, "useAlphaTest");
 		uniforms[Uniform::useFog] = glGetUniformLocation(programId, "useFog");
 		uniforms[Uniform::colorMult] = glGetUniformLocation(programId, "colorMult");
@@ -323,6 +344,7 @@ void main()
 		uniforms[Uniform::fogLinNear] = glGetUniformLocation(programId, "fogLinNear");
 		uniforms[Uniform::fogLinFar] = glGetUniformLocation(programId, "fogLinFar");
 		uniforms[Uniform::fogExpDensity] = glGetUniformLocation(programId, "fogExpDensity");
+		uniforms[Uniform::fogColor] = glGetUniformLocation(programId, "fogColor");
 
 		use();
 	}
@@ -461,5 +483,14 @@ void main()
 	{
 		glUniform1f(glGetUniformLocation(programId, uniform.c_str()), value);
 	}
+
+	bool Vertex::operator==(const Vertex& other)
+	{
+		return position == other.position && normal == other.normal && color == other.color && texcoord == other.texcoord;
+	}
+
+
+
+
 
 }

@@ -13,7 +13,7 @@ namespace tigl
 		{
 		public:
 			virtual ~Shader() {};
-			
+
 			// Sets the projection matrix
 			virtual void setProjectionMatrix(const glm::mat4& matrix) = 0;
 
@@ -28,7 +28,7 @@ namespace tigl
 
 			// enables the use of texture coordinats set in vertices, and uses textures set in texture sampler
 			virtual void enableTexture(bool enabled) = 0;
-			
+
 			// enables the lighting
 			virtual void enableLighting(bool enabled) = 0;
 
@@ -73,6 +73,9 @@ namespace tigl
 
 			// Sets the fog to Exponential
 			virtual void setFogExp2(float density) = 0;
+
+			// Sets the color of the fog
+			virtual void setFogColor(const glm::vec3& color) = 0;
 		};
 	}
 	// A simple structure to store vertices. Can store positions, normals, colors and texture coordinats
@@ -105,7 +108,7 @@ namespace tigl
 		}
 
 		// Creates a vertex with a position, a texture coordinat and a color
-		static Vertex PTC(const glm::vec3& position, const glm::vec2& texcoord, const glm::vec4 &color) {
+		static Vertex PTC(const glm::vec3& position, const glm::vec2& texcoord, const glm::vec4& color) {
 			return { position, glm::vec3(0,1,0), color, texcoord };
 		}
 
@@ -124,7 +127,21 @@ namespace tigl
 		static Vertex PCTN(const glm::vec3& position, const glm::vec4& color, const glm::vec2& texcoord, const glm::vec3& normal) {
 			return { position, normal, color, texcoord };
 		}
+
+		bool operator == (const Vertex& other);
 	};
+
+	class VBO
+	{
+	public:
+		~VBO();
+	private:
+		GLuint id;
+		unsigned int size;
+		friend void drawVertices(GLenum shape, VBO* vbo);
+		friend VBO* createVbo(const std::vector<Vertex>& vertices);
+	};
+
 	// Access point for the shader
 	extern std::unique_ptr<internal::Shader> shader;
 
@@ -141,8 +158,11 @@ namespace tigl
 	void end();
 
 	// Draws a full array of vertices
-	void drawVertices(GLenum shape, const std::vector<Vertex> &vertices);
+	void drawVertices(GLenum shape, const std::vector<Vertex>& vertices);
+
+	// Creates a VBO
+	VBO* createVbo(const std::vector<Vertex>& vertices);
+
+	// draws vertices from a VBO
+	void drawVertices(GLenum shape, VBO* vbo);
 }
-
-
-

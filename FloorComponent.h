@@ -6,9 +6,9 @@ using tigl::Vertex;
 
 #include <vector>
 
-#define FLOOR_WIDTH 10.0f
-#define FLOOR_LENGTH 30.0f
-#define FLOOR_OVERLAP 0.001f
+#define FLOOR_WIDTH 20.0f
+#define FLOOR_LENGTH 20.0f
+#define FLOOR_OVERLAP 0.0f
 
 class FloorComponent : public DrawComponent
 {

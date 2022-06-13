@@ -160,11 +160,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BoundingBoxComponent.cpp" />
+    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="DrawComponent.cpp" />
+    <ClCompile Include="FloorComponent.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="MoveComponent.cpp" />
+    <ClCompile Include="ObjectComponent.cpp" />
+    <ClCompile Include="PlayerComponent.cpp" />
+    <ClCompile Include="TextureComponent.cpp" />
     <ClCompile Include="tigl.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoundingBoxComponent.h" />
+    <ClInclude Include="Component.h" />
+    <ClInclude Include="DrawComponent.h" />
+    <ClInclude Include="FloorComponent.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="MoveComponent.h" />
+    <ClInclude Include="ObjectComponent.h" />
+    <ClInclude Include="PlayerComponent.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="TextureComponent.h" />
     <ClInclude Include="tigl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
