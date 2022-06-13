@@ -170,7 +170,6 @@
     <ClCompile Include="WorldMap.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="ObjectComponent.cpp" />
-    <ClCompile Include="PlayerComponent.cpp" />
     <ClCompile Include="TextureComponent.cpp" />
     <ClCompile Include="tigl.cpp" />
   </ItemGroup>
@@ -184,7 +183,6 @@
     <ClInclude Include="WorldMap.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="ObjectComponent.h" />
-    <ClInclude Include="PlayerComponent.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextureComponent.h" />
     <ClInclude Include="tigl.h" />

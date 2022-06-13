@@ -26,9 +26,6 @@
     <ClCompile Include="ObjectComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="WorldMap.cpp" />
@@ -57,9 +54,6 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="ObjectComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h" />

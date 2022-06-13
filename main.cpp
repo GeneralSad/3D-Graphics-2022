@@ -1,7 +1,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "tigl.h"
+
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "tigl.h"
 using tigl::Vertex;
 
 #define _USE_MATH_DEFINES
@@ -22,6 +24,7 @@ using tigl::Vertex;
 
 GLFWwindow* window;
 
+//Methods in file
 void init();
 void update();
 void draw();
@@ -29,23 +32,40 @@ void createScene();
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow* window);
 
+//Object variables
 std::shared_ptr<GameObject> player;
 std::list<std::shared_ptr<GameObject>> list;
 std::shared_ptr<GameScene> scene;
 
-float deltaTime = 0.0f;	// Time between current frame and last frame
-float lastFrame = 0.0f; // Time of last frame
+//Frame variables
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+//Camera variables
+glm::vec3 cameraDirection;
+glm::vec3 cameraPosition = glm::vec3(0.0f, 1.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+//Mouse variables
+float lastMouseX = 400, lastMouseY = 300;
+bool mouseInitialized = true;
+float yaw = -90.0f;
+float pitch = -90.0f;
 
 int main(void)
 {
-	if (!glfwInit())
+	if (!glfwInit()) {
 		throw "Could not initialize glwf";
+	}
+		
 	window = glfwCreateWindow(1400, 800, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
 		throw "Could not initialize glwf";
 	}
+
 	glfwMakeContextCurrent(window);
 
 	tigl::init();
@@ -115,58 +135,6 @@ void update()
 
 }
 
-glm::vec3 direction;
-
-glm::vec3 cameraPos = glm::vec3(0.0f, 1.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-float lastX = 400, lastY = 300;
-bool firstMouse = true;
-float yaw = -90.0f;
-float pitch = -90.0f;
-
-void processInput(GLFWwindow* window) {
-
-	float cameraSpeed = 2.5f * deltaTime;
-
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, true);
-		//std::cout << "Escape" << std::endl;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		cameraPos += cameraSpeed * cameraFront;
-		//std::cout << "W" << std::endl;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		cameraPos -= cameraSpeed * cameraFront;
-		//std::cout << "S" << std::endl;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		//std::cout << "A" << std::endl;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-		//std::cout << "D" << std::endl;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		cameraPos.y += cameraSpeed;
-		//std::cout << "Space" << std::endl;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-		cameraPos.y -= cameraSpeed;
-		//std::cout << "Control" << std::endl;
-	}
-
-}
-
 void draw()
 {
 	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
@@ -182,48 +150,16 @@ void draw()
 
 	tigl::shader->setProjectionMatrix(projection);
 
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraDirection.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraDirection.y = sin(glm::radians(pitch));
+	cameraDirection.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
-	glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 	tigl::shader->setViewMatrix(view);
 	tigl::shader->setModelMatrix(glm::mat4(1.0f));
 
 	scene->draw();
 
-}
-
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-	if (firstMouse)
-	{
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
-	}
-
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos;
-	lastX = xpos;
-	lastY = ypos;
-
-	float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	yaw += xoffset;
-	pitch += yoffset;
-
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	direction.y = sin(glm::radians(pitch));
-	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	cameraFront = glm::normalize(direction);
 }
 
 //Create a scene
@@ -252,4 +188,85 @@ void createScene() {
 
 	std::list<std::shared_ptr<GameObject>> objectList;
 
+}
+
+void processInput(GLFWwindow* window) {
+
+	float cameraSpeed;
+
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true);
+		//std::cout << "Escape" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		cameraSpeed = 2 * (2.5f * deltaTime);
+		//std::cout << "Shift" << std::endl;
+	}
+	else {
+		cameraSpeed = 2.5f * deltaTime;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		cameraPosition.y += cameraSpeed;
+		//std::cout << "Space" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+		cameraPosition.y -= cameraSpeed;
+		//std::cout << "Control" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		cameraPosition += cameraSpeed * cameraFront;
+		//std::cout << "W" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		cameraPosition -= cameraSpeed * cameraFront;
+		//std::cout << "S" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		//std::cout << "A" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+		//std::cout << "D" << std::endl;
+	}
+
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	if (mouseInitialized)
+	{
+		lastMouseX = xpos;
+		lastMouseY = ypos;
+		mouseInitialized = false;
+	}
+
+	float xoffset = xpos - lastMouseX;
+	float yoffset = lastMouseY - ypos;
+	lastMouseX = xpos;
+	lastMouseY = ypos;
+
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::normalize(direction);
 }
