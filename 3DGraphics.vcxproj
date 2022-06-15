@@ -167,6 +167,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Planet.cpp" />
     <ClCompile Include="WorldMap.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
     <ClCompile Include="ObjectComponent.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="FloorComponent.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="Planet.h" />
     <ClInclude Include="WorldMap.h" />
     <ClInclude Include="MoveComponent.h" />
     <ClInclude Include="ObjectComponent.h" />

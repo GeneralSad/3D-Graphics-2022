@@ -23,13 +23,13 @@ void WorldMap::Construct(std::list<std::shared_ptr<GameObject>> gameObjects) {
 	this->gameObjects.push_back(terrain);
 }
 
-
 WorldMap::~WorldMap()
 {
 }
 
 void WorldMap::addObject(std::shared_ptr<GameObject> object)
 {
+	gameObjects.push_back(object);
 }
 
 void WorldMap::draw()

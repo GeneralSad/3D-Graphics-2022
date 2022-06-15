@@ -17,6 +17,7 @@ using tigl::Vertex;
 #include "TextureComponent.h"
 #include "MoveComponent.h"
 #include "WorldMap.h"
+#include "Planet.h"
 
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "glew32s.lib")
@@ -164,29 +165,37 @@ void draw()
 
 //Create a scene
 void createScene() {
+	
+	std::list<std::shared_ptr<GameObject>> objectList;
+
 	scene = std::make_shared<GameScene>();
 
 	//Create player object
 	player = std::make_shared<GameObject>();
-	glm::vec3 playerPos = glm::vec3(0, 1, 3);
+	glm::vec3 playerPos = glm::vec3(0, 0, 0);
 	player->position = playerPos;
 
 	//Add components to player object
-	player->addComponent(std::make_shared<MoveComponent>(playerPos));
-#ifndef COLLISION_DEBUG
+	//player->addComponent(std::make_shared<MoveComponent>(playerPos));
 	//player->addComponent(std::make_shared<ObjectComponent>("models/dolphin/", 0.05f));
-#endif
 	//player->addComponent(std::make_shared<CollisionComponent>(glm::vec3(0.75f, 1, 1.2f))); //ToDo change to accurate hitbox.
-	player->scale = glm::vec3(0.7f, 0.7f, 0.7f);
-	player->rotation = glm::vec3(0, -1 * (float)M_PI, 0);
-	scene->addGameObject(player);
+	objectList.push_back(player);
+
+	std::shared_ptr<GameObject> planet = std::make_shared<GameObject>();
+	planet->addComponent(std::make_shared<Planet>("models/Moon"));
+	//std::shared_ptr<Planet> Component = planet->getComponent<Planet>();
+
+	objectList.push_back(planet);
 
 	std::shared_ptr<GameObject> worldMap = std::make_shared<GameObject>();
 	worldMap->addComponent(std::make_shared<WorldMap>());
-	std::shared_ptr<WorldMap> Component = worldMap->getComponent<WorldMap>();
-	scene->addGameObject(worldMap);
+	//std::shared_ptr<WorldMap> Component = worldMap->getComponent<WorldMap>();
+	objectList.push_back(worldMap);
 
-	std::list<std::shared_ptr<GameObject>> objectList;
+	for (std::shared_ptr object : objectList)
+	{
+		scene->addGameObject(object);
+	}
 
 }
 
