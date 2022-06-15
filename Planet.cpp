@@ -1,40 +1,52 @@
 #include "Planet.h"
 
-
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include "TextureComponent.h"
 #include "ObjectComponent.h"
+#include "MoveComponent.h"
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+
+const float orbitResolution = 0.001;
 
 Planet::Planet()
 {
-	std::string filePath;
-	Construct(filePath);
+	std::string filePath = "models/Moon";
+	Construct(filePath, glm::vec3(0.0f), 5.0f, 0.01f);
 }
 
-Planet::Planet(std::string filePath)
+Planet::Planet(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed)
 {
-	Construct(filePath);
+	Construct(filePath, center, orbitRadius, orbitSpeed);
 }
 
-void Planet::Construct(std::string filePath) {
-	std::shared_ptr<GameObject> planet = std::make_shared<GameObject>();
-	//terrain->addComponent(std::make_shared<FloorComponent>());
-	planet->addComponent(std::make_shared<TextureComponent>(filePath + ".png"));
-	planet->addComponent(std::make_shared<ObjectComponent>(filePath + ".obj"));
+void Planet::Construct(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed) {
+	std::shared_ptr<GameObject> planetObject = std::make_shared<GameObject>();
+	planetObject->addComponent(std::make_shared<MoveComponent>(glm::vec3(center.x + orbitRadius, 0, 0)));
+	planetObject->addComponent(std::make_shared<TextureComponent>(filePath + ".png"));
+	planetObject->addComponent(std::make_shared<ObjectComponent>(filePath + ".obj"));
+	planetObject->position = glm::vec3(center.x + orbitRadius, center.y, center.z);
 
-
-	this->planet = planet;
+	this->center = center;
+	this->orbitSpeed = orbitSpeed;
+	this->planet = planetObject;
 }
 
 Planet::~Planet()
 {
 }
 
-//void Planet::addObject(std::shared_ptr<GameObject> object)
-//{
-//	gameObjects.push_back(object);
-//}
+glm::vec3 Planet::rotate(glm::vec3 coords, glm::vec3 centerPoint, float rotationAngle)
+{
+	double cosValue = cos(rotationAngle);
+	double sinValue = sin(rotationAngle);
+	glm::vec3 temp(0);
+	temp.x = ((coords.x - centerPoint.x) * cosValue - (coords.z - centerPoint.z) * sinValue) + centerPoint.x;
+	temp.z = ((coords.x - centerPoint.x) * sinValue + (coords.z - centerPoint.z) * cosValue) + centerPoint.z;
+	return temp;
+}
 
 void Planet::draw()
 {
@@ -57,5 +69,10 @@ void Planet::draw()
 
 void Planet::update(float elapsed_time)
 {
+	std::shared_ptr<MoveComponent> moveComponent = planet->getComponent<MoveComponent>();
+	moveComponent->target = rotate(moveComponent->target, center, orbitResolution / elapsed_time * orbitSpeed);
+
+	std::cout << std::to_string(moveComponent->target.x) << " : " << std::to_string(moveComponent->target.z) << std::endl;
+
 	planet->update(elapsed_time);
 }

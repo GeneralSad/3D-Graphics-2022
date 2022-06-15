@@ -30,6 +30,7 @@
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="WorldMap.cpp" />
     <ClCompile Include="Planet.cpp" />
+    <ClCompile Include="SystemLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h">
@@ -61,6 +62,7 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="WorldMap.h" />
     <ClInclude Include="Planet.h" />
+    <ClInclude Include="SystemLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Components">

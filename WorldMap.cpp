@@ -18,8 +18,6 @@ WorldMap::WorldMap(std::list<std::shared_ptr<GameObject>> gameObjects)
 void WorldMap::Construct(std::list<std::shared_ptr<GameObject>> gameObjects) {
 	std::shared_ptr<GameObject> terrain = std::make_shared<GameObject>();
 	terrain->addComponent(std::make_shared<FloorComponent>());
-	//terrain->addComponent(std::make_shared<TextureComponent>());
-
 	this->gameObjects.push_back(terrain);
 }
 
@@ -38,7 +36,6 @@ void WorldMap::draw()
 	glm::mat4 modelMatrix = position;
 
 	for (auto& object : gameObjects) {
-		//object->draw(modelMatrix);
 		object->draw();
 	}
 }

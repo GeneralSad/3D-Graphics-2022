@@ -182,7 +182,7 @@ void createScene() {
 	objectList.push_back(player);
 
 	std::shared_ptr<GameObject> planet = std::make_shared<GameObject>();
-	planet->addComponent(std::make_shared<Planet>("models/Moon"));
+	planet->addComponent(std::make_shared<Planet>());
 	//std::shared_ptr<Planet> Component = planet->getComponent<Planet>();
 
 	objectList.push_back(planet);
