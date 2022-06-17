@@ -192,8 +192,6 @@ void ObjectComponent::loadObjectFile(const std::string fileName, std::shared_ptr
 		}
 	}
 
-
-
 	// File is done
 	objectDataLock.lock();
 	file->animationIndex = listIndex;

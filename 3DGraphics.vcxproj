@@ -162,12 +162,12 @@
   <ItemGroup>
     <ClCompile Include="BoundingBoxComponent.cpp" />
     <ClCompile Include="Component.cpp" />
-    <ClCompile Include="DrawComponent.cpp" />
     <ClCompile Include="FloorComponent.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Planet.cpp" />
+    <ClCompile Include="Sun.cpp" />
     <ClCompile Include="SystemLoader.cpp" />
     <ClCompile Include="WorldMap.cpp" />
     <ClCompile Include="MoveComponent.cpp" />
@@ -183,6 +183,10 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Planet.h" />
+    <ClInclude Include="PlanetCreator.h" />
+    <ClInclude Include="Sun.h" />
+    <ClInclude Include="SunCreator.h" />
+    <ClInclude Include="SystemCreator.h" />
     <ClInclude Include="SystemLoader.h" />
     <ClInclude Include="WorldMap.h" />
     <ClInclude Include="MoveComponent.h" />

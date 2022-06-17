@@ -38,16 +38,6 @@ Planet::~Planet()
 {
 }
 
-glm::vec3 Planet::rotate(glm::vec3 coords, glm::vec3 centerPoint, float rotationAngle)
-{
-	double cosValue = cos(rotationAngle);
-	double sinValue = sin(rotationAngle);
-	glm::vec3 temp(0);
-	temp.x = ((coords.x - centerPoint.x) * cosValue - (coords.z - centerPoint.z) * sinValue) + centerPoint.x;
-	temp.z = ((coords.x - centerPoint.x) * sinValue + (coords.z - centerPoint.z) * cosValue) + centerPoint.z;
-	return temp;
-}
-
 void Planet::draw()
 {
 
@@ -67,12 +57,22 @@ void Planet::draw()
 	tigl::shader->enableColor(true);
 }
 
+glm::vec3 Planet::rotate(glm::vec3 coords, glm::vec3 centerPoint, float rotationAngle)
+{
+	double cosValue = cos(rotationAngle);
+	double sinValue = sin(rotationAngle);
+	glm::vec3 temp(0);
+	temp.x = ((coords.x - centerPoint.x) * cosValue - (coords.z - centerPoint.z) * sinValue) + centerPoint.x;
+	temp.z = ((coords.x - centerPoint.x) * sinValue + (coords.z - centerPoint.z) * cosValue) + centerPoint.z;
+	return temp;
+}
+
 void Planet::update(float elapsed_time)
 {
 	std::shared_ptr<MoveComponent> moveComponent = planet->getComponent<MoveComponent>();
 	moveComponent->target = rotate(moveComponent->target, center, orbitResolution / elapsed_time * orbitSpeed);
 
-	std::cout << std::to_string(moveComponent->target.x) << " : " << std::to_string(moveComponent->target.z) << std::endl;
+	//std::cout << std::to_string(moveComponent->target.x) << " : " << std::to_string(moveComponent->target.z) << std::endl;
 
 	planet->update(elapsed_time);
 }

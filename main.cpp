@@ -17,7 +17,7 @@ using tigl::Vertex;
 #include "TextureComponent.h"
 #include "MoveComponent.h"
 #include "WorldMap.h"
-#include "Planet.h"
+#include "Systemloader.h"
 
 #pragma comment(lib, "glfw3.lib")
 #pragma comment(lib, "glew32s.lib")
@@ -102,7 +102,7 @@ void init()
 	tigl::shader->setLightDiffuse(0, glm::vec3(0.5f, 0.5f, 0.5f));
 	tigl::shader->setLightSpecular(0, glm::vec3(1, 1, 1));
 	tigl::shader->setFogColor(glm::vec3(0.3f, 0.4f, 0.6f));
-	tigl::shader->setFogExp2(0.04f);
+	tigl::shader->setFogExp2(0.001f);
 	tigl::shader->setShinyness(0);
 
 	createScene();
@@ -181,11 +181,18 @@ void createScene() {
 	//player->addComponent(std::make_shared<CollisionComponent>(glm::vec3(0.75f, 1, 1.2f))); //ToDo change to accurate hitbox.
 	objectList.push_back(player);
 
-	std::shared_ptr<GameObject> planet = std::make_shared<GameObject>();
-	planet->addComponent(std::make_shared<Planet>());
+	//std::shared_ptr<GameObject> planet = std::make_shared<GameObject>();
+	//planet->addComponent(std::make_shared<Sun>());
 	//std::shared_ptr<Planet> Component = planet->getComponent<Planet>();
 
-	objectList.push_back(planet);
+	//objectList.push_back(planet);
+	std::shared_ptr<SystemLoader> loader = std::make_shared<SystemLoader>("resources/System1.txt");
+	loader->loadSystem();
+
+	for ( auto body : loader->bodies)
+	{
+		scene->addBody(body);
+	}
 
 	std::shared_ptr<GameObject> worldMap = std::make_shared<GameObject>();
 	worldMap->addComponent(std::make_shared<WorldMap>());

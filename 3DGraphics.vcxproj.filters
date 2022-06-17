@@ -5,9 +5,6 @@
     <ClCompile Include="Component.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="DrawComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="BoundingBoxComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -31,6 +28,7 @@
     <ClCompile Include="WorldMap.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="SystemLoader.cpp" />
+    <ClCompile Include="Sun.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Component.h">
@@ -63,6 +61,10 @@
     <ClInclude Include="WorldMap.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="SystemLoader.h" />
+    <ClInclude Include="SystemCreator.h" />
+    <ClInclude Include="PlanetCreator.h" />
+    <ClInclude Include="SunCreator.h" />
+    <ClInclude Include="Sun.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Components">
