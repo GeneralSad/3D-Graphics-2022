@@ -14,20 +14,21 @@ const float orbitResolution = 0.001;
 Planet::Planet()
 {
 	std::string filePath = "models/Moon";
-	Construct(filePath, glm::vec3(0.0f), 5.0f, 0.01f);
+	Construct(filePath, glm::vec3(0.0f), 5.0f, 0.01f, 1.0f);
 }
 
-Planet::Planet(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed)
+Planet::Planet(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale)
 {
-	Construct(filePath, center, orbitRadius, orbitSpeed);
+	Construct(filePath, center, orbitRadius, orbitSpeed, scale);
 }
 
-void Planet::Construct(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed) {
+void Planet::Construct(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale) {
 	std::shared_ptr<GameObject> planetObject = std::make_shared<GameObject>();
 	planetObject->addComponent(std::make_shared<MoveComponent>(glm::vec3(center.x + orbitRadius, 0, 0)));
 	planetObject->addComponent(std::make_shared<TextureComponent>(filePath + ".png"));
 	planetObject->addComponent(std::make_shared<ObjectComponent>(filePath + ".obj"));
 	planetObject->position = glm::vec3(center.x + orbitRadius, center.y, center.z);
+	planetObject->scale = glm::vec3(scale);
 
 	this->center = center;
 	this->orbitSpeed = orbitSpeed;
@@ -69,8 +70,14 @@ glm::vec3 Planet::rotate(glm::vec3 coords, glm::vec3 centerPoint, float rotation
 
 void Planet::update(float elapsed_time)
 {
-	std::shared_ptr<MoveComponent> moveComponent = planet->getComponent<MoveComponent>();
-	moveComponent->target = rotate(moveComponent->target, center, orbitResolution / elapsed_time * orbitSpeed);
+
+	extern bool isPaused;
+
+	if (!isPaused)
+	{
+		std::shared_ptr<MoveComponent> moveComponent = planet->getComponent<MoveComponent>();
+		moveComponent->target = rotate(moveComponent->target, center, orbitResolution / elapsed_time * orbitSpeed);
+	}
 
 	//std::cout << std::to_string(moveComponent->target.x) << " : " << std::to_string(moveComponent->target.z) << std::endl;
 

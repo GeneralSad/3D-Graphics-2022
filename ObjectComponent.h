@@ -1,3 +1,4 @@
+/// @file
 #pragma once
 
 #include "DrawComponent.h"
@@ -14,25 +15,36 @@
 #include <mutex>
 #include <map>
 
+/// \brief
+/// Class for handling objects
+/// \details
+/// This class reads out an .obj file and does things based on the contents of the .obj file
 class ObjectComponent : public DrawComponent {
 
 private:
-	// Animation data
-	float animationDelay = 0;
-	float animationTime = 0;
-	int animationIndex = 0;
 
-	// This holds the vertices.
+	/// \brief
+	/// Holds vertices in VBO
+	/// \details
+	/// This class holds all vertices that are buffered inside a VBO
 	class ObjectGroup {
 	public:
-		std::string name;					// Object group name
-		tigl::VBO* bufferedObjectVertices;	// List of vertices
-		int materialIndex;					// Index for the texture file
+		std::string name;
+		tigl::VBO* bufferedObjectVertices;
+		int materialIndex;
 	};
 
-	// Holds the texture data.
+	/// \brief
+	/// Holds all the material info
+	/// \details
+	/// This class contains all the needed material data of the object
 	class MaterialInfo {
 	public:
+
+		/// \brief
+		/// Constructs a materialinfo
+		/// \details
+		/// This constructs a materialinfo that contains material data
 		MaterialInfo();
 		std::string name;
 		std::shared_ptr<TextureComponent> texture;
@@ -42,57 +54,103 @@ private:
 	};
 
 public:
-	// Holds a object file
+
+	/// \brief
+	/// Holds the lists of different vertices and materials
+	/// \details
+	/// This class holds all the vertices stored in the VBO and the material info
 	class ObjectFile {
 	public:
-		// Holds the object
 		std::vector<std::shared_ptr<ObjectGroup>> groups;
 		std::vector<std::shared_ptr<MaterialInfo>> materials;
-		int animationIndex;
 	};
 
 private:
-	// Object that is created when building to communicate with gl thread.
+
+	/// \brief
+	/// Builds the objects
+	/// \details
+	/// This class creates the objects and stores them in the VBO
 	class ObjectBuilder {
 	public:
+
+		/// \brief
+		/// Makes a VBO call
+		/// \details
+		/// Makes an asynchronous VBO call for vertices
 		tigl::VBO* asyncObjectVBOCall(std::vector<tigl::Vertex> vertices);
+
+		/// \brief
+		/// Makes a texture call
+		/// \details
+		/// Makes an asynchronous texture call
 		std::shared_ptr<TextureComponent> asyncObjectTextureCall(std::string path);
+
+		/// \brief
+		/// Awaits the other threads
+		/// \details
+		/// Makes asynchronous calls and awaits the results
 		void awaitObjectGLCall();
 	private:
-		// Used for operation safety on objects.
 		std::mutex buildLock;
 		bool inputGiven = false;
 		bool outputGiven = false;
 		int operation = -1;
 
-		// Used for VBO create calls.
 		std::vector<tigl::Vertex> verticesRequest;
 		tigl::VBO* vboResponse;
 
-		// Used for texure create calls.
 		std::string pathRequest;
 		std::shared_ptr<TextureComponent> textureResponse;
 	};
 
-	// Holds the amount of working threads.
 	int amountWorkers = 0;
 
-	// Holds the information about the object
 	std::mutex objectDataLock;
 	std::shared_ptr<std::vector<std::shared_ptr<ObjectFile>>> objectData = std::make_shared<std::vector<std::shared_ptr<ObjectFile>>>();
 
-	// Loads in the texture data.
+	/// \brief
+	/// Loads an object file
+	/// \details
+	/// Reads out an object file and creates one
 	void loadObjectFile(const std::string fileName, std::shared_ptr<ObjectBuilder> context, int listIndex);
+
+	/// \brief
+	/// Loads a material file
+	/// \details
+	/// Reads out a material file and creates one
 	void loadMaterialFile(const std::string& fileName, const std::string& dirName, std::shared_ptr<ObjectFile>& file, std::shared_ptr<ObjectBuilder> context);
+
+	/// \brief
+	/// Draws the object
+	/// \details
+	/// Draws all the vertices of the object and applies the texture to it
 	void objectDrawer(std::shared_ptr<ObjectFile> file);
 public:
+
+	/// \brief
+	/// Creates an objectcomponent
+	/// \details
+	/// Creates an objectcomponent, asks for a filepath
 	ObjectComponent(const std::string& fileName);
-	ObjectComponent(const std::string& folderName, float animationDelay);
+
+	/// \brief
+	/// Deconstructs an objectcomponent
+	/// \details
+	/// Deconstructs an objectcomponent and clears all used memory
 	~ObjectComponent();
 
+	/// \brief
+	/// Draw the object
+	/// \details
+	/// Draws the object along with its texture if it has one
 	virtual void draw() override;
+
+	/// \brief
+	/// Updates the component
+	/// \details
+	/// Updates all variables that need updating
 	virtual void update(float elapsedTime) override;
 };
 
-// Global private caching map.
 static std::map<std::string, std::shared_ptr<std::vector<std::shared_ptr<ObjectComponent::ObjectFile>>>> cachedObjects;

@@ -14,11 +14,11 @@ private:
 	glm::vec3 center;
 	float orbitSpeed;
 
-	void Construct(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed);
+	void Construct(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale);
 
 public:
 	Planet();
-	Planet(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed);
+	Planet(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale);
 	~Planet();
 
 	void draw();
@@ -26,4 +26,3 @@ public:
 	void update(float elapsed_time);
 	glm::vec3 rotate(glm::vec3 coords, glm::vec3 centerPoint, float rotationAngle);
 };
-

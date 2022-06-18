@@ -11,12 +11,10 @@ using tigl::Vertex;
 
 #include <iostream>
 
-#include "FloorComponent.h"
 #include "GameScene.h"
 #include "GameObject.h"
 #include "TextureComponent.h"
 #include "MoveComponent.h"
-#include "WorldMap.h"
 #include "Systemloader.h"
 
 #pragma comment(lib, "glfw3.lib")
@@ -53,6 +51,8 @@ float lastMouseX = 400, lastMouseY = 300;
 bool mouseInitialized = true;
 float yaw = -90.0f;
 float pitch = -90.0f;
+
+bool isPaused;
 
 int main(void)
 {
@@ -96,14 +96,16 @@ void init()
 
 	tigl::shader->enableLighting(true);
 	tigl::shader->setLightCount(1);
-	tigl::shader->setLightDirectional(0, true);
-	tigl::shader->setLightPosition(0, (glm::vec3(0, 7, 12)));
+	tigl::shader->setLightDirectional(0, false);
+	tigl::shader->setLightPosition(0, (glm::vec3(0, 0, 0)));
 	tigl::shader->setLightAmbient(0, glm::vec3(0.5f, 0.5f, 0.5f));
-	tigl::shader->setLightDiffuse(0, glm::vec3(0.5f, 0.5f, 0.5f));
+	tigl::shader->setLightDiffuse(0, glm::vec3(0.25f, 0.16f, 0.0f));
 	tigl::shader->setLightSpecular(0, glm::vec3(1, 1, 1));
 	tigl::shader->setFogColor(glm::vec3(0.3f, 0.4f, 0.6f));
 	tigl::shader->setFogExp2(0.001f);
 	tigl::shader->setShinyness(0);
+
+	isPaused = false;
 
 	createScene();
 
@@ -128,17 +130,13 @@ void update()
 
 	processInput(window);
 
-#ifdef FPS_DEBUG
-	std::cout << 1 / deltaTime << " FPS" << std::endl;
-#endif // FPS_DEBUG
-
 	scene->update(deltaTime);
 
 }
 
 void draw()
 {
-	glClearColor(0.3f, 0.4f, 0.6f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	tigl::shader->enableFog(true);
@@ -175,17 +173,8 @@ void createScene() {
 	glm::vec3 playerPos = glm::vec3(0, 0, 0);
 	player->position = playerPos;
 
-	//Add components to player object
-	//player->addComponent(std::make_shared<MoveComponent>(playerPos));
-	//player->addComponent(std::make_shared<ObjectComponent>("models/dolphin/", 0.05f));
-	//player->addComponent(std::make_shared<CollisionComponent>(glm::vec3(0.75f, 1, 1.2f))); //ToDo change to accurate hitbox.
 	objectList.push_back(player);
 
-	//std::shared_ptr<GameObject> planet = std::make_shared<GameObject>();
-	//planet->addComponent(std::make_shared<Sun>());
-	//std::shared_ptr<Planet> Component = planet->getComponent<Planet>();
-
-	//objectList.push_back(planet);
 	std::shared_ptr<SystemLoader> loader = std::make_shared<SystemLoader>("resources/System1.txt");
 	loader->loadSystem();
 
@@ -193,11 +182,6 @@ void createScene() {
 	{
 		scene->addBody(body);
 	}
-
-	std::shared_ptr<GameObject> worldMap = std::make_shared<GameObject>();
-	worldMap->addComponent(std::make_shared<WorldMap>());
-	//std::shared_ptr<WorldMap> Component = worldMap->getComponent<WorldMap>();
-	objectList.push_back(worldMap);
 
 	for (std::shared_ptr object : objectList)
 	{
@@ -251,6 +235,16 @@ void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		//std::cout << "D" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) {
+		isPaused = true;
+		//std::cout << "F1" << std::endl;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) {
+		isPaused = false;
+		//std::cout << "F2" << std::endl;
 	}
 
 }

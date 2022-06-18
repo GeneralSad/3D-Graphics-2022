@@ -14,20 +14,21 @@ const float orbitResolution = 0.001;
 Sun::Sun()
 {
 	std::string filePath = "models/Moon";
-	Construct(filePath, glm::vec3(0.0f), 0.0f, 0.01f);
+	Construct(filePath, glm::vec3(0.0f), 0.0f, 0.01f, 1.0f);
 }
 
-Sun::Sun(std::string filePath, glm::vec3 center)
+Sun::Sun(std::string filePath, glm::vec3 center, float scale)
 {
-	Construct(filePath, center, 0.0f, 0.01f);
+	Construct(filePath, center, 0.0f, 0.01f, scale);
 }
 
-void Sun::Construct(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed) {
+void Sun::Construct(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale) {
 	std::shared_ptr<GameObject> planetObject = std::make_shared<GameObject>();
 	planetObject->addComponent(std::make_shared<MoveComponent>(glm::vec3(center.x + orbitRadius, 0, 0)));
 	planetObject->addComponent(std::make_shared<TextureComponent>(filePath + ".png"));
 	planetObject->addComponent(std::make_shared<ObjectComponent>(filePath + ".obj"));
 	planetObject->position = glm::vec3(center.x + orbitRadius, center.y, center.z);
+	planetObject->scale = glm::vec3(scale);
 
 	this->center = center;
 	this->orbitSpeed = orbitSpeed;
@@ -66,7 +67,12 @@ glm::vec3 Sun::rotate(glm::vec3 rotation, float rotationAngle)
 void Sun::update(float elapsed_time)
 {
 
-	planet->rotation = rotate(planet->rotation, orbitResolution / elapsed_time * orbitSpeed);
+	extern bool isPaused;
+
+	if (!isPaused)
+	{
+		planet->rotation = rotate(planet->rotation, orbitResolution / elapsed_time * orbitSpeed);
+	}
 
 	//std::cout << std::to_string(planet->rotation.y)<< std::endl;
 

@@ -20,7 +20,7 @@ private:
 
 	void loadFile(const std::string filePath);
 	std::shared_ptr<DrawComponent> createObject(std::shared_ptr<SystemCreator> creator);
-	std::shared_ptr<DrawComponent> createObject(std::shared_ptr<SystemCreator> creator, std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed);
+	std::shared_ptr<DrawComponent> createObject(std::shared_ptr<SystemCreator> creator, std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale);
 
 };
 

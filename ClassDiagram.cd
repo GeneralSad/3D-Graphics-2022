@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Component">
+    <Position X="39" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAAAAAAAAAAAAAAAACAAgBAAAAEAAA=</HashCode>
+      <FileName>Component.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DrawComponent">
+    <Position X="36.5" Y="5.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DrawComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameObject">
+    <Position X="30.25" Y="2.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ABAABAAAAAAAAAgECAKAIAACAABAAAAAAAAAAAIEAAA=</HashCode>
+      <FileName>GameObject.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameScene">
+    <Position X="28" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgABAAAAAIABAAIAIAAAAAIAAAAAAAEQAg=</HashCode>
+      <FileName>GameScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MoveComponent">
+    <Position X="41.5" Y="5.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAAAAAAIAAAAAAAAAAAAQAAAAAAAEAEAAA=</HashCode>
+      <FileName>MoveComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ObjectComponent">
+    <Position X="30.75" Y="7.25" Width="2.5" />
+    <NestedTypes>
+      <Class Name="ObjectComponent::ObjectGroup" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ObjectComponent.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ObjectComponent::MaterialInfo" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ObjectComponent.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ObjectComponent::ObjectFile" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ObjectComponent.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ObjectComponent::ObjectBuilder" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ObjectComponent.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>IAgAQAAAAAAAAAgAAAIAAAAAJAAIAAgAQIAAACAEAAA=</HashCode>
+      <FileName>ObjectComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Planet">
+    <Position X="36.5" Y="7.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAggAAAAAAAAgAAAAAIQAAAAAAAAAgAAAAIAAAAEIAA=</HashCode>
+      <FileName>Planet.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlanetCreator">
+    <Position X="25.25" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PlanetCreator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sun">
+    <Position X="34" Y="7.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAggAAAAAAAAgAAACAIQAAAAAAAAAgAAAAAAAAAEAAQ=</HashCode>
+      <FileName>Sun.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SunCreator">
+    <Position X="22.25" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SunCreator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SystemCreator">
+    <Position X="23.75" Y="2.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=</HashCode>
+      <FileName>SystemCreator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SystemLoader">
+    <Position X="32.5" Y="4" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAgAAAAIAAAAAEAIAAEAAAAAAAQAAAAA=</HashCode>
+      <FileName>SystemLoader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TextureComponent">
+    <Position X="39" Y="5.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>TextureComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

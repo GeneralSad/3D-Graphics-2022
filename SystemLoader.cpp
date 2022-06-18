@@ -28,9 +28,9 @@ std::shared_ptr<DrawComponent> SystemLoader::createObject(std::shared_ptr<System
 	return body;
 }
 
-std::shared_ptr<DrawComponent> SystemLoader::createObject(std::shared_ptr<SystemCreator> creator, std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed)
+std::shared_ptr<DrawComponent> SystemLoader::createObject(std::shared_ptr<SystemCreator> creator, std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale)
 {
-	std::shared_ptr<DrawComponent> body = creator->CreateBody(filePath, center, orbitRadius, orbitSpeed);
+	std::shared_ptr<DrawComponent> body = creator->CreateBody(filePath, center, orbitRadius, orbitSpeed, scale);
 	return body;
 }
 
@@ -92,7 +92,7 @@ void SystemLoader::loadFile(const std::string filePath)
 
 			glm::vec3 center = glm::vec3(std::stoi(params[2]), std::stoi(params[3]), std::stoi(params[4]));
 
-			bodies.push_back(createObject(creator, params[1], center, std::stof(params[5]), std::stof(params[6])));
+			bodies.push_back(createObject(creator, params[1], center, std::stof(params[5]), std::stof(params[6]), std::stof(params[7])));
 		}
 			
 		else if (params[0] == "sun") {
@@ -100,7 +100,7 @@ void SystemLoader::loadFile(const std::string filePath)
 
 			glm::vec3 center = glm::vec3(std::stoi(params[2]), std::stoi(params[3]), std::stoi(params[4]));
 
-			std::shared_ptr<DrawComponent> object = createObject(creator, params[1], center, std::stof(params[5]), std::stof(params[6]));
+			std::shared_ptr<DrawComponent> object = createObject(creator, params[1], center, std::stof(params[5]), std::stof(params[6]), std::stof(params[7]));
 
 			bodies.push_back(object);
 		}

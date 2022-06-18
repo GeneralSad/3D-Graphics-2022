@@ -15,10 +15,5 @@ public:
 	/// \details
 	/// Removes all variables of this class from memory
 	~DrawComponent() {};
-
-	/// \brief
-	/// Virtual function for drawing
-	/// \details
-	/// Virtual function that makes sure that draw() will be implemented
 	virtual void draw() = 0;
 };

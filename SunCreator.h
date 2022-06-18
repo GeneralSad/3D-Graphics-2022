@@ -12,8 +12,8 @@ public:
         return std::make_shared<Sun>();
     }
     
-    std::shared_ptr<DrawComponent> FactoryMethod(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed) const override {
-        return std::make_shared<Sun>(filePath, center);
+    std::shared_ptr<DrawComponent> FactoryMethod(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale) const override {
+        return std::make_shared<Sun>(filePath, center, scale);
     }
 
 };

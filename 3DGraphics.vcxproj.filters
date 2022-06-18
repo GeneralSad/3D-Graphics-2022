@@ -5,12 +5,6 @@
     <ClCompile Include="Component.cpp">
       <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="BoundingBoxComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="FloorComponent.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
     <ClCompile Include="TextureComponent.cpp">
       <Filter>Components</Filter>
     </ClCompile>
@@ -25,7 +19,6 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
-    <ClCompile Include="WorldMap.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="SystemLoader.cpp" />
     <ClCompile Include="Sun.cpp" />
@@ -37,13 +30,7 @@
     <ClInclude Include="DrawComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="BoundingBoxComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="stb_image.h" />
-    <ClInclude Include="FloorComponent.h">
-      <Filter>Components</Filter>
-    </ClInclude>
     <ClInclude Include="TextureComponent.h">
       <Filter>Components</Filter>
     </ClInclude>
@@ -58,7 +45,6 @@
     </ClInclude>
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="WorldMap.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="SystemLoader.h" />
     <ClInclude Include="SystemCreator.h" />
@@ -73,5 +59,8 @@
     <Filter Include="lib">
       <UniqueIdentifier>{943ed5ff-2fe1-462b-89c8-2bdbc5caada6}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

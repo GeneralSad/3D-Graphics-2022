@@ -7,11 +7,6 @@
 #include <thread>
 #include <mutex>
 
-
-
-/**
-* Replaces a substring in a string
-*/
 static std::string replace(std::string str, const std::string& toReplace, const std::string& replacement)
 {
 	size_t index = 0;
@@ -26,9 +21,6 @@ static std::string replace(std::string str, const std::string& toReplace, const 
 	return str;
 }
 
-/**
-* Splits a string into substrings, based on a seperator
-*/
 static std::vector<std::string> split(std::string str, const std::string& seperator)
 {
 	std::vector<std::string> ret;
@@ -45,19 +37,12 @@ static std::vector<std::string> split(std::string str, const std::string& sepera
 	return ret;
 }
 
-/**
-* Turns a string to lowercase
-*/
 static inline std::string toLower(std::string data)
 {
 	std::transform(data.begin(), data.end(), data.begin(), ::tolower);
 	return data;
 }
 
-
-/**
-* Cleans up a line for processing
-*/
 static inline std::string cleanLine(std::string line)
 {
 	line = replace(line, "\t", " ");
@@ -74,10 +59,8 @@ static inline std::string cleanLine(std::string line)
 	return line;
 }
 
-/*Loads the objectfile and adds it to the list of objects for the animation*/
 void ObjectComponent::loadObjectFile(const std::string fileName, std::shared_ptr<ObjectBuilder> context, int listIndex)
 {
-	// Checking wheter the file actually exists
 	std::cout << "Loading " << fileName << std::endl;
 	std::string dirName = fileName;
 	if (dirName.rfind("/") != std::string::npos)
@@ -87,7 +70,6 @@ void ObjectComponent::loadObjectFile(const std::string fileName, std::shared_ptr
 	if (fileName == dirName)
 		dirName = "";
 
-	// Opening file
 	std::ifstream pFile(fileName.c_str());
 
 	if (!pFile.is_open())
@@ -96,11 +78,9 @@ void ObjectComponent::loadObjectFile(const std::string fileName, std::shared_ptr
 		return;
 	}
 
-	// The object groups.
 	std::shared_ptr<ObjectGroup> currentGroup = std::make_shared<ObjectGroup>();
 	currentGroup->materialIndex = -1;
 
-	// Information for building the object
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 	std::vector<glm::vec2> texcoords;
@@ -112,23 +92,19 @@ void ObjectComponent::loadObjectFile(const std::string fileName, std::shared_ptr
 		std::string line;
 		std::getline(pFile, line);
 		line = cleanLine(line);
-		if (line == "" || line[0] == '#') //skip empty or commented line
+		if (line == "" || line[0] == '#')
 			continue;
 
 		std::vector<std::string> params = split(line, " ");
 		params[0] = toLower(params[0]);
 
-		// Location coordinate
 		if (params[0] == "v")
 			vertices.push_back(glm::vec3((float)atof(params[1].c_str()), (float)atof(params[2].c_str()), (float)atof(params[3].c_str())));
-		// Normal coordinate
 		else if (params[0] == "vn")
 			normals.push_back(glm::vec3((float)atof(params[1].c_str()), (float)atof(params[2].c_str()), (float)atof(params[3].c_str())));
-		// Texture coordinate
 		else if (params[0] == "vt")
 			texcoords.push_back(glm::vec2((float)atof(params[1].c_str()), 1 - (float)atof(params[2].c_str())));
 
-		// Structure data
 		else if (params[0] == "f")
 		{
 			for (size_t ii = 4; ii <= params.size(); ii++)
@@ -139,11 +115,11 @@ void ObjectComponent::loadObjectFile(const std::string fileName, std::shared_ptr
 					int normal;
 					int texcoord = -1;
 					std::vector<std::string> indices = split(params[i == (ii - 3) ? 1 : i], "/");
-					if (indices.size() >= 1)	//er is een positie
+					if (indices.size() >= 1)
 						position = atoi(indices[0].c_str()) - 1;
-					if (indices.size() == 2)		//alleen texture
+					if (indices.size() == 2)
 						texcoord = atoi(indices[1].c_str()) - 1;
-					if (indices.size() == 3)		//v/t/n of v//n
+					if (indices.size() == 3)
 					{
 						if (indices[1] != "")
 							texcoord = atoi(indices[1].c_str()) - 1;
@@ -192,25 +168,13 @@ void ObjectComponent::loadObjectFile(const std::string fileName, std::shared_ptr
 		}
 	}
 
-	// File is done
 	objectDataLock.lock();
-	file->animationIndex = listIndex;
 	objectData->push_back(file);
 	objectDataLock.unlock();
 
 	amountWorkers--;
-
-	// Printing debug information 
-	/*std::cout << "Amount of vertices: " << vertices.size() << std::endl;
-	std::cout << "Amount of normals: " << normals.size() << std::endl;
-	std::cout << "Amount of textures: " << file->materials.size() << std::endl;
-	std::cout << "Amount of texcoords: " << texcoords.size() << std::endl;
-	std::cout << "Amount of groups: " << file->groups.size() << std::endl;*/
 }
 
-/**
-* Reads a material file
-*/
 void ObjectComponent::loadMaterialFile(const std::string& fileName, const std::string& dirName, std::shared_ptr<ObjectFile>& file, std::shared_ptr<ObjectBuilder> context)
 {
 	std::cout << "Loading " << fileName << std::endl;
@@ -281,10 +245,10 @@ void ObjectComponent::loadMaterialFile(const std::string& fileName, const std::s
 			params[0] == "tr" ||
 			false)
 		{
-			//these values are usually not used for rendering at this time, so ignore them
+			//Ignore other values
 		}
 		else
-			std::cout << "Didn't parse " << params[0] << " in material file" << std::endl;
+			std::cout << "Couldn't parse " << params[0] << " in material file" << std::endl;
 	}
 	if (currentMaterial != NULL)
 		file->materials.push_back(currentMaterial);
@@ -293,18 +257,15 @@ void ObjectComponent::loadMaterialFile(const std::string& fileName, const std::s
 
 ObjectComponent::ObjectComponent(const std::string& fileName)
 {
-	// If in cache
 	if (cachedObjects.contains(fileName)) {
 		objectData = cachedObjects.at(fileName);
 		return;
 	}
 
-	// If not in cache
 	std::shared_ptr<ObjectBuilder> build = std::make_shared<ObjectBuilder>();
 	amountWorkers = 1;
 	std::thread thread(&ObjectComponent::loadObjectFile, this, fileName, build, 0);
 
-	// Awaiting vbo add calls.
 	while (amountWorkers > 0) {
 		build->awaitObjectGLCall();
 	}
@@ -312,50 +273,6 @@ ObjectComponent::ObjectComponent(const std::string& fileName)
 	thread.join();
 
 	cachedObjects.insert({ fileName, objectData });
-}
-
-
-ObjectComponent::ObjectComponent(const std::string& folderName, float animationDelayIn)
-{
-	// Setting variables
-	animationDelay = animationDelayIn;
-	amountWorkers = 0;
-
-	// If in cache
-	if (cachedObjects.contains(folderName)) {
-		objectData = cachedObjects.at(folderName);
-		return;
-	}
-
-	// Booting up threads
-	std::vector<std::shared_ptr<ObjectBuilder>> builders;
-	std::vector<std::thread> threads;
-	int index = 0;
-	for (const auto& entry : std::filesystem::directory_iterator(folderName)) {
-		if (entry.path().extension().string()._Equal(".obj")) {
-			// Setting up thread
-			amountWorkers++;
-			std::shared_ptr<ObjectBuilder> build = std::make_shared<ObjectBuilder>();
-			builders.push_back(build);
-			threads.push_back(std::thread(&ObjectComponent::loadObjectFile, this, entry.path().string(), build, index));
-			index++;
-		}
-	}
-
-	// Awaiting gl add calls.
-	while (amountWorkers > 0) {
-		for (std::shared_ptr<ObjectBuilder> b : builders) {
-			b->awaitObjectGLCall();
-		}
-	}
-
-	// Joining threads;
-	for (std::thread& t : threads) {
-		t.join();
-	}
-
-	// Adding it to cache
-	cachedObjects.insert({ folderName, objectData });
 }
 
 ObjectComponent::~ObjectComponent()
@@ -367,18 +284,14 @@ void ObjectComponent::draw()
 	if (objectData->size() == 1) objectDrawer(objectData->at(0));
 	else {
 		for (std::shared_ptr<ObjectFile> file : *objectData) {
-			if (file->animationIndex == animationIndex) {
-				objectDrawer(file);
-			}
+			objectDrawer(file);
 		}
 	}
 }
 
 void ObjectComponent::objectDrawer(std::shared_ptr<ObjectFile> file) {
-	// Looping through list of obj-groups
 	for (std::shared_ptr<ObjectGroup> group : file->groups) {
 		if (file->materials.at(group->materialIndex)->texture != nullptr) {
-			// Enabling textures because standard disabled
 			tigl::shader->enableTexture(true);
 			file->materials.at(group->materialIndex)->texture->bind();
 		}
@@ -387,22 +300,11 @@ void ObjectComponent::objectDrawer(std::shared_ptr<ObjectFile> file) {
 		tigl::shader->enableTexture(false);
 	}
 
-	// Disabling textures else components with colors will get textures
 	tigl::shader->enableTexture(false);
 }
 
 void ObjectComponent::update(float elapsedTime)
 {
-	if ((animationTime += elapsedTime) > animationDelay) {
-		//std::cout << animationIndex << std::endl;
-		animationTime = animationTime - animationDelay;
-
-		animationIndex++;
-		if (animationIndex >= objectData->size()) {
-			animationIndex = 0;
-		}
-
-	}
 }
 
 ObjectComponent::MaterialInfo::MaterialInfo()
@@ -430,7 +332,6 @@ tigl::VBO* ObjectComponent::ObjectBuilder::asyncObjectVBOCall(std::vector<tigl::
 		}
 		buildLock.unlock();
 
-		// Sleep to give other threads time to edit.
 		std::this_thread::sleep_for(std::chrono::microseconds(50));
 	}
 }
@@ -455,7 +356,6 @@ std::shared_ptr<TextureComponent> ObjectComponent::ObjectBuilder::asyncObjectTex
 		}
 		buildLock.unlock();
 
-		// Sleep to give other threads time to edit.
 		std::this_thread::sleep_for(std::chrono::microseconds(50));
 	}
 }
@@ -477,6 +377,5 @@ void ObjectComponent::ObjectBuilder::awaitObjectGLCall()
 	}
 	buildLock.unlock();
 
-	// Sleep to give other threads time to edit.
 	std::this_thread::sleep_for(std::chrono::microseconds(50));
 }

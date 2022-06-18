@@ -14,11 +14,11 @@ private:
 	glm::vec3 center;
 	float orbitSpeed;
 
-	void Construct(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed);
+	void Construct(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale);
 
 public:
 	Sun();
-	Sun(std::string filePath, glm::vec3 center);
+	Sun(std::string filePath, glm::vec3 center, float scale);
 	~Sun();
 
 	void draw();
