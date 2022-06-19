@@ -7,6 +7,8 @@
 #include <thread>
 #include <mutex>
 
+#include <catch2/catch_test_macros.hpp>
+
 static std::string replace(std::string str, const std::string& toReplace, const std::string& replacement)
 {
 	size_t index = 0;
@@ -19,6 +21,23 @@ static std::string replace(std::string str, const std::string& toReplace, const 
 		++index;
 	}
 	return str;
+}
+
+TEST_CASE("Text is being replaced", "[replace]") {
+	std::string str = "test";
+	std::string toReplace = "es";
+	std::string replacement = "a";
+	REQUIRE(replace(str, toReplace, replacement) == "tat");
+
+	str = "help";
+	toReplace = "h";
+	replacement = "w";
+	REQUIRE(replace(str, toReplace, replacement) == "welp");
+
+	str = "Good ";
+	toReplace = " ";
+	replacement = "";
+	REQUIRE(replace(str, toReplace, replacement) == "Good");
 }
 
 static std::vector<std::string> split(std::string str, const std::string& seperator)
@@ -37,10 +56,41 @@ static std::vector<std::string> split(std::string str, const std::string& sepera
 	return ret;
 }
 
+TEST_CASE("Text is being split", "[split]") {
+	std::string str = "what the";
+	std::string seperator = " ";
+	std::vector<std::string> expected;
+	expected.push_back("what");
+	expected.push_back("the");
+	REQUIRE(split(str, seperator) == expected);
+
+	str = "what_the";
+	seperator = "_";
+	expected.clear();
+	expected.push_back("what");
+	expected.push_back("the");
+	REQUIRE(split(str, seperator) == expected);
+
+	str = "what,the";
+	seperator = ",";
+	expected.clear();
+	expected.push_back("what");
+	expected.push_back("the");
+	REQUIRE(split(str, seperator) == expected);
+}
+
 static inline std::string toLower(std::string data)
 {
 	std::transform(data.begin(), data.end(), data.begin(), ::tolower);
 	return data;
+}
+
+TEST_CASE("Text to lower", "[toLower]") {
+	std::string data = "HELLO";
+	REQUIRE(toLower(data) == "hello");
+
+	data = "hello";
+	REQUIRE(toLower(data) == "hello");
 }
 
 static inline std::string cleanLine(std::string line)
@@ -57,6 +107,17 @@ static inline std::string cleanLine(std::string line)
 	if (line[line.length() - 1] == ' ')
 		line = line.substr(0, line.length() - 1);
 	return line;
+}
+
+TEST_CASE("Clean line", "[cleanLine]") {
+	std::string line = "	HELLO";
+	REQUIRE(cleanLine(line) == "hello");
+
+	line = "hello  ";
+	REQUIRE(toLower(line) == "hello");
+
+	line = " hello";
+	REQUIRE(toLower(line) == "hello");
 }
 
 void ObjectComponent::loadObjectFile(const std::string fileName, std::shared_ptr<ObjectBuilder> context, int listIndex)

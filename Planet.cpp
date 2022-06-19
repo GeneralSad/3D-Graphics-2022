@@ -9,12 +9,18 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-const float orbitResolution = 0.001;
+const float orbitResolution = 0.001f;
+
+const std::string standardObject = "models/Moon";
+const glm::vec3 standardCenter = glm::vec3(0.0f);
+const float standardRadius = 5.0f;
+const float standardOrbitSpeed = 0.01f;
+const float standardScale = 1.0f;
 
 Planet::Planet()
 {
-	std::string filePath = "models/Moon";
-	Construct(filePath, glm::vec3(0.0f), 5.0f, 0.01f, 1.0f);
+	std::string filePath = standardObject;
+	Construct(filePath, standardCenter, standardRadius, standardOrbitSpeed, standardScale);
 }
 
 Planet::Planet(std::string filePath, glm::vec3 center, float orbitRadius, float orbitSpeed, float scale)

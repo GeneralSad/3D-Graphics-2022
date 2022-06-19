@@ -21,6 +21,15 @@ using tigl::Vertex;
 #pragma comment(lib, "glew32s.lib")
 #pragma comment(lib, "opengl32.lib")
 
+const float fov = 75.0;
+const float perspectiveNear = 0.01f;
+const float perspectiveFar = 1000.0f;
+
+const float pitchLimit = 89.0f;
+
+const float walkSpeed = 2.5f;
+const float sprintSpeed = 5.0f;
+
 GLFWwindow* window;
 
 //Methods in file
@@ -54,13 +63,31 @@ float pitch = -90.0f;
 
 bool isPaused;
 
+int WindowWidth;
+int WindowHeight;
+
 int main(void)
 {
 	if (!glfwInit()) {
 		throw "Could not initialize glwf";
 	}
-		
-	window = glfwCreateWindow(1400, 800, "Hello World", NULL, NULL);
+	
+	int count;
+
+	GLFWmonitor** monitors = glfwGetMonitors(&count);
+
+	const GLFWvidmode* mode = glfwGetVideoMode(monitors[0]);
+	WindowWidth = mode->width;
+	WindowHeight = mode->height;
+
+	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+	window = glfwCreateWindow(mode->width, mode->height, "Solar System", NULL, NULL);
+	//window = glfwCreateWindow(mode->width, mode->height, "Solar System", monitors[0], NULL);
+
 	if (!window)
 	{
 		glfwTerminate();
@@ -145,7 +172,7 @@ void draw()
 
 	int viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	glm::mat4 projection = glm::perspective(glm::radians(75.0f), viewport[2] / (float)viewport[3], 0.01f, 1000.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(fov), viewport[2] / (float)viewport[3], perspectiveNear, perspectiveFar);
 
 	tigl::shader->setProjectionMatrix(projection);
 
@@ -200,11 +227,11 @@ void processInput(GLFWwindow* window) {
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		cameraSpeed = 2 * (2.5f * deltaTime);
+		cameraSpeed = sprintSpeed * deltaTime;
 		//std::cout << "Shift" << std::endl;
 	}
 	else {
-		cameraSpeed = 2.5f * deltaTime;
+		cameraSpeed = walkSpeed * deltaTime;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -269,10 +296,10 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	yaw += xoffset;
 	pitch += yoffset;
 
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
+	if (pitch > pitchLimit)
+		pitch = pitchLimit;
+	if (pitch < -pitchLimit)
+		pitch = -pitchLimit;
 
 	glm::vec3 direction;
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
