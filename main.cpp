@@ -28,7 +28,7 @@ const float perspectiveFar = 1000.0f;
 const float pitchLimit = 89.0f;
 
 const float walkSpeed = 2.5f;
-const float sprintSpeed = 5.0f;
+const float sprintSpeed = 15.0f;
 
 GLFWwindow* window;
 
